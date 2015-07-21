@@ -80,6 +80,7 @@
     <ClInclude Include="FuturePromises.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AsyncTreadPool.cpp" />
     <ClCompile Include="GlobalThreadPool.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>

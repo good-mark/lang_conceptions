@@ -31,13 +31,13 @@ int main() {
         std::cout << "Error\n";*/
 
 	// 2-threads example
-	/*Promise<int> pr;
+	Promise<int> pr;
 	Future<int> check = pr.GetFuture();
 	unsigned threadID;
 	HANDLE hThread = ( HANDLE ) _beginthreadex( NULL, 0, &SecondThreadFunc, &check, 0, &threadID );
-	pr.SetValue( 7 ); // ≈сли раскомментировать эту строчку, то все будет хорошо, выведетс€ установленное значение 7
+	pr.SetValue( 7 ); // If this string is commented, setted value won't be printed
 	WaitForSingleObject( hThread, INFINITE );
-	CloseHandle( hThread );*/
+	CloseHandle( hThread );
 
 	// asynch example
 	std::function<int(void)> f11 = std::bind( inc, 11 );
@@ -48,7 +48,7 @@ int main() {
 	Future<int> fut19 = async<int>( &f19, 1 );
 	std::cout << "####### Yeap, I've done it! " << fut11.Get() << ". And again: " << fut13.Get() << std::endl;
 	std::cout << "####### Synch: " << fut19.Get() << std::endl;
-
+	/*
 	// callAfter example
 	Promise<int> pr1;
 	Promise<int> pr2;
@@ -60,6 +60,6 @@ int main() {
 	pr2.SetValue( 65 );
 	pr3.SetValue( 75 );
 	f3.callAfter( f2.callAfter( f1 ) );
-	std::cout << "####### callAfter values: " << f1.Get() << " " << f2.Get() << " " << f3.Get() << std::endl;
+	std::cout << "####### callAfter values: " << f1.Get() << " " << f2.Get() << " " << f3.Get() << std::endl;*/
 	return 0;
 }
