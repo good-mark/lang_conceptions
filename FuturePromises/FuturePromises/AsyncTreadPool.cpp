@@ -1,7 +1,7 @@
 #include "FuturePromises.h"
 
 /*
-	Реализация методов класса AsyncThreadPool
+	A realization of AsyncThreadPool's methods
 */
 AsyncThreadPool::AsyncThreadPool() {
 	threadsNum = std::thread::hardware_concurrency();
