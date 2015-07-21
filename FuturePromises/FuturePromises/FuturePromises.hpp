@@ -97,7 +97,7 @@ void SharedState<objectType>::setException( const std::exception& exc ) {
 // Realization of Future's methods
 
 /*
-	Блокирует поток и ожидает возвращение результата.
+	Blocks the thread and waits for return. 
 */
 template<typename objectType>
 objectType Future<objectType>::Get() { 
@@ -108,10 +108,11 @@ objectType Future<objectType>::Get() {
 }
 
 /*
-	Возвращает NULL, если результат еще не получен, и сам результат иначе.
+	Non-blocking attempt to get the result.
+	If the result is not ready yet, return NULL, else return result.
 */
 template<class objectType>
-bool Future<objectType>::TryGet( objectType& outValue ) { // неблокирующая попытка получения
+bool Future<objectType>::TryGet( objectType& outValue ) { 
 	std::cout << "I am in TryGet\n";
 	return sstate->TryGet( outValue );
 }
@@ -129,7 +130,7 @@ Future<objectType>& Future<objectType>::callAfter(  Future<argType>& args ) {
 // Realization of Promise's methods
 
 /*
-	Устанавливает успешный результат в promise.
+	Sets success result in promise.
 */
 template<class objectType>
 void Promise<objectType>::SetValue( objectType const& value ) { 
@@ -137,7 +138,7 @@ void Promise<objectType>::SetValue( objectType const& value ) {
 }
 
 /*
-	Устанавливает, что в процессе вычисления результата произошло исключение.
+	Sets the flag if an exception occured during the counting the result.
 */
 template<class objectType>
 void Promise<objectType>::SetException( std::exception* exc ) { 
@@ -147,20 +148,6 @@ void Promise<objectType>::SetException( std::exception* exc ) {
 template<class objectType>
 Future<objectType> Promise<objectType>::GetFuture() {
 	return Future<objectType>( sstate );
-}
-
-AsyncThreadPool::AsyncThreadPool() {
-	threadsNum = std::thread::hardware_concurrency();
-	buzyThreads = 0;
-	mutex = CreateMutex( NULL, FALSE, NULL );
-}
-
-AsyncThreadPool::~AsyncThreadPool() {
-	CloseHandle( mutex );
-	for ( std::map<unsigned, void*>::iterator it = promises.begin(); it != promises.end(); ++it ) {
-		free( it->second );
-		//pool.promises.erase( GetCurrentThreadId() );
-	}
 }
 
 template<typename objectType>
@@ -182,23 +169,10 @@ unsigned __stdcall startProcess( void* params ) {
 	return 0;
 }
 
-bool AsyncThreadPool::enough() {
-	return buzyThreads >= threadsNum;
-}
-
-void AsyncThreadPool::incBuzyThreads() {
-	WaitForSingleObject( mutex, INFINITE ); // 1
-	++buzyThreads;
-	ReleaseMutex( mutex );
-}
-
-void AsyncThreadPool::decBuzyThreads() {
-	WaitForSingleObject( mutex, INFINITE ); // 1
-	--buzyThreads;
-	ReleaseMutex( mutex );
-}
-
-template<typename objectType> // шаблон - тип возвращаемого значения func
+/*
+	objectType is a type of func's return value.
+*/
+template<typename objectType> 
 Future<objectType> async( std::function<objectType(void)>* func, bool synch ) {
 	
 	if ( synch || pool.enough() ) {
